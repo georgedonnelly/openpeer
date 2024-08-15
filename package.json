@@ -20,7 +20,6 @@
 		"@headlessui/react": "^2.1.2",
 		"@heroicons/react": "^2.1.5",
 		"@knocklabs/client": "^0.10.11",
-		"@next/font": "^14.2.5",
 		"@openzeppelin/merkle-tree": "^1.0.7",
 		"@parcel/watcher": "^2.4.1",
 		"@quadrata/client-react": "^3.0.1",
@@ -81,9 +80,9 @@
 		"@types/utf8": "^3.0.3",
 		"@typescript-eslint/eslint-plugin": "^8.1.0",
 		"@typescript-eslint/parser": "^8.1.0",
-		"eslint-plugin-react-hooks": "^4.6.2",
 		"autoprefixer": "^10.4.20",
 		"eslint-plugin-react": "^7.35.0",
+		"eslint-plugin-react-hooks": "^4.6.2",
 		"postcss": "^8.4.41"
 	}
 }
