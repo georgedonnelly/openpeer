@@ -23,7 +23,7 @@ import {
 	ChatBubbleLeftIcon,
 	LockClosedIcon
 } from '@heroicons/react/24/outline';
-import { Manrope } from '@next/font/google';
+import { Manrope } from "next/font/google";
 
 import {
 	DynamicConnectButton,

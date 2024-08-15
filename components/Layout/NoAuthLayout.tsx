@@ -8,7 +8,7 @@ import darkLogo from 'public/smallDarkLogo.svg';
 import React, { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 
-import { Manrope } from '@next/font/google';
+import { Manrope } from "next/font/google";
 import { DynamicWidget } from '@dynamic-labs/sdk-react-core';
 
 import discord from 'public/discord.svg';

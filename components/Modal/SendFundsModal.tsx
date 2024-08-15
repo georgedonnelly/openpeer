@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { Manrope } from '@next/font/google';
+import { Manrope } from "next/font/google";
 import TokenImage from 'components/Token/Token';
 import Input from 'components/Input/Input';
 import Button from 'components/Button/Button';
