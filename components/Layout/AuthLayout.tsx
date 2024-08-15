@@ -23,7 +23,7 @@ import {
 	ChatBubbleLeftIcon,
 	LockClosedIcon
 } from '@heroicons/react/24/outline';
-import { Manrope } from "next/font/google";
+import { Manrope } from 'next/font/google';
 
 import {
 	DynamicConnectButton,
@@ -31,7 +31,7 @@ import {
 	useAuthenticateConnectedUser,
 	useDynamicContext
 } from '@dynamic-labs/sdk-react-core';
-import { ChatWithOwner } from 'react-wallet-chat-sso';
+// import { ChatWithOwner } from 'react-wallet-chat-sso';
 import Avatar from '../Avatar';
 import Button from '../Button/Button';
 import { CollapseButton } from '../Navigation';

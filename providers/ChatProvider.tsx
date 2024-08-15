@@ -3,7 +3,7 @@
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { MessageContext } from 'contexts/MessageContext';
 import React, { useContext } from 'react';
-import { WalletChatProvider, WalletChatWidget } from 'react-wallet-chat-sso';
+// import { WalletChatProvider, WalletChatWidget } from 'react-wallet-chat-sso';
 import { useNetwork } from 'wagmi';
 import { useAccount } from 'hooks';
 
@@ -19,26 +19,29 @@ const ChatProvider = ({ children }: ChatProviderProps) => {
 	const signInformation = signedMessage && messageToSign;
 
 	return (
-		<WalletChatProvider>
-			<div className={isAuthenticated && signInformation ? '' : 'hidden'}>
-				<WalletChatWidget
-					connectUrl="https://sso-fe.walletchat.fun"
-					requestSignature={!signInformation}
-					connectedWallet={
-						account && chain ? { walletName: connector?.name || '', account, chainId: chain.id } : undefined
-					}
-					signedMessageData={
-						signedMessage && messageToSign
-							? {
-									signature: signedMessage,
-									msgToSign: messageToSign
-							  }
-							: undefined
-					}
-				/>
-			</div>
-			{children}
-		</WalletChatProvider>
+		// 	<WalletChatProvider>
+		// 		<div className={isAuthenticated && signInformation ? '' : 'hidden'}>
+		// 			<WalletChatWidget
+		// 				connectUrl="https://sso-fe.walletchat.fun"
+		// 				requestSignature={!signInformation}
+		// 				connectedWallet={
+		// 					account && chain ? { walletName: connector?.name || '', account, chainId: chain.id } : undefined
+		// 				}
+		// 				signedMessageData={
+		// 					signedMessage && messageToSign
+		// 						? {
+		// 								signature: signedMessage,
+		// 								msgToSign: messageToSign
+		// 						  }
+		// 						: undefined
+		// 				}
+		// 			/>
+		// 		</div>
+		// 		{children}
+		// 	</WalletChatProvider>
+		// );
+		// };
+		<p>Chat returning soon</p>
 	);
 };
 
