@@ -4402,7 +4402,7 @@
   resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.51.21.tgz"
   integrity sha512-POQxm42IUp6n89kKWF4IZi18v3fxQWFRolvBA6phNVmA8psdfB1MvDnGacCJdS+EOX12w/CyHM62z//rHmYmvw==
 
-"@tanstack/react-query@^5.51.3", "@tanstack/react-query@>=5.0.0":
+"@tanstack/react-query@^5.51.23", "@tanstack/react-query@^5.51.3", "@tanstack/react-query@>=5.0.0":
   version "5.51.23"
   resolved "https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.51.23.tgz"
   integrity sha512-CfJCfX45nnVIZjQBRYYtvVMIsGgWLKLYC4xcUiYEey671n1alvTZoCBaU9B85O8mF/tx9LPyrI04A6Bs2THv4A==
@@ -13209,10 +13209,10 @@ viem@^1.1.4:
     isows "1.0.3"
     ws "8.13.0"
 
-"viem@^1.16.6 || ^2.1.1", "viem@^1.19.13 || ^2.2.0", viem@^2.19.4, viem@^2.7.6, viem@2.x:
-  version "2.19.4"
-  resolved "https://registry.npmjs.org/viem/-/viem-2.19.4.tgz"
-  integrity sha512-JdhK3ui3uPD2tnpqGNkJaDQV4zTfOeKXcF+VrU8RG88Dn2e0lFjv6l7m0YNmYLsHm+n5vFFfCLcUrTk6xcYv5w==
+"viem@^1.16.6 || ^2.1.1", "viem@^1.19.13 || ^2.2.0", viem@^2.19.6, viem@^2.7.6, viem@2.x:
+  version "2.19.6"
+  resolved "https://registry.npmjs.org/viem/-/viem-2.19.6.tgz"
+  integrity sha512-7jiuX+ZncPZE8iEzgW/iO7EaAMRJEW8hYeJy9YFTMK34Wa9aWzqOm4lrORgemlsqJ/kpQG4InzhG0jc2HY67FA==
   dependencies:
     "@adraffy/ens-normalize" "1.10.0"
     "@noble/curves" "1.4.0"
