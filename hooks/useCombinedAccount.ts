@@ -1,8 +1,8 @@
-// hooks/useAccount.ts
+// hooks/useCombinedAccount.ts
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { useAccount as useWagmiAccount } from 'wagmi';
 
-const useAccount = () => {
+const useCombinedAccount = () => {
 	const { address, isConnected, isConnecting, connector } = useWagmiAccount();
 	const { primaryWallet } = useDynamicContext();
 
@@ -14,4 +14,4 @@ const useAccount = () => {
 	};
 };
 
-export default useAccount;
+export default useCombinedAccount;

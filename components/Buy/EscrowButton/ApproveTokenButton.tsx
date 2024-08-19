@@ -1,7 +1,7 @@
 // components/Buy/EscrowButton/ApproveTokenButton.tsx
 import Button from 'components/Button/Button';
 import TransactionLink from 'components/TransactionLink';
-import { useTransactionFeedback, useAccount } from 'hooks';
+import { useTransactionFeedback, useCombinedAccount } from 'hooks';
 import { useApproval } from 'hooks/transactions';
 import { Token } from 'models/types';
 import React, { useEffect } from 'react';
@@ -19,7 +19,8 @@ const ApproveTokenButton = ({
 	amount: bigint;
 	onApprovalChange: (approved: boolean) => void;
 }) => {
-	const { address, isConnected } = useAccount();
+	const { address, isConnected } = useCombinedAccount();
+
 	const { isFetching, isLoading, isSuccess, data, approve } = useApproval({
 		token,
 		spender,
@@ -39,19 +40,18 @@ const ApproveTokenButton = ({
 		approve?.();
 	};
 
-	const { data: allowance } = useContractRead({
+	const { data: allowance } = useReadContract({
 		address: token.address,
-		abi: erc20ABI,
+		abi: erc20Abi,
 		functionName: 'allowance',
-		args: [address!, spender],
-		watch: true
+		args: [address!, spender]
 	});
 
 	const approved = !!allowance && !!amount && allowance >= amount;
 
 	useEffect(() => {
 		onApprovalChange(isSuccess || approved);
-	}, [isSuccess, approved]);
+	}, [isSuccess, approved, onApprovalChange]);
 
 	return (
 		<Button

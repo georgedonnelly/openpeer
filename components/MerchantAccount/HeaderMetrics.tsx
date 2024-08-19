@@ -1,15 +1,15 @@
 // components/MerchantAccount/HeaderMetrics.tsx
 import Avatar from 'components/Avatar';
 import QuadrataClient from 'components/QuadrataClient';
-import { providers } from 'ethers';
-import { useVerificationStatus, useAccount } from 'hooks';
+// import { providers } from 'ethers';
+import { useVerificationStatus, useCombinedAccount } from 'hooks';
 import { User } from 'models/types';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { smallWalletAddress } from 'utils';
-// import { useNetwork, useSwitchNetwork } from 'wagmi'; pending code update
-import { useAccount, useSwitchChain } from 'wagmi';
-
+import { useConfig, useSwitchChain } from 'wagmi';
+import { createPublicClient, http } from 'viem';
+import { mainnet } from 'viem/chains';
 import {
 	CalendarDaysIcon,
 	CalendarIcon,
@@ -91,27 +91,37 @@ const HeaderMetrics = ({ user, verificationOpen }: HeaderMetricsProps) => {
 	const date = new Date(createdAt);
 	const [walletAge, setWalletAge] = useState<string>();
 	const [verificationModal, setVerificationModal] = useState(verificationOpen);
-	const { chain } = useNetwork();
-	const { address: connectedAddress } = useAccount();
-	const { switchNetwork } = useSwitchNetwork();
+
+	const config = useConfig();
+	const { chains, state } = config;
+	const chainId = state.current ? state.connections.get(state.current)?.chainId : undefined;
+	const chain = chains.find((c) => c.id === chainId);
+
+	const { address: connectedAddress } = useCombinedAccount();
+	const { switchChain } = useSwitchChain();
 	const { verified, fetchVerificationStatus } = useVerificationStatus(address);
 
 	const openVerificationModal = () => {
-		if (chain?.id === polygon.id) {
+		if (chainId === polygon.id) {
 			setVerificationModal(true);
 		} else {
-			switchNetwork?.(polygon.id);
+			switchChain({ chainId: polygon.id });
 		}
 	};
 
 	useEffect(() => {
 		const fetchWalletAge = async () => {
-			const provider = new providers.EtherscanProvider();
-			const history = await provider.getHistory(address);
-			const [firstTransaction] = history;
+			const publicClient = createPublicClient({
+				chain: mainnet,
+				transport: http()
+			});
 
-			if (firstTransaction?.timestamp) {
-				setWalletAge(getTimePassed(firstTransaction.timestamp));
+			const blockNumber = await publicClient.getBlockNumber();
+			const block = await publicClient.getBlock({ blockNumber });
+			const transactions = await publicClient.getTransactionCount({ address });
+
+			if (transactions > 0 && block.timestamp) {
+				setWalletAge(getTimePassed(Number(block.timestamp)));
 			}
 		};
 
@@ -119,7 +129,7 @@ const HeaderMetrics = ({ user, verificationOpen }: HeaderMetricsProps) => {
 			fetchWalletAge();
 			fetchVerificationStatus();
 		}
-	}, [address]);
+	}, [address, fetchVerificationStatus]);
 
 	const onFinish = async () => {
 		await fetchVerificationStatus();
@@ -244,12 +254,11 @@ const HeaderMetrics = ({ user, verificationOpen }: HeaderMetricsProps) => {
 									</>
 								) : (
 									<Link
-										href={`${chain.blockExplorers!.default.url}/address/${address}`}
+										href={`${chain.blockExplorers?.default.url}/address/${address}`}
 										className="flex items-center py-2 px-6 border rounded"
 										target="_blank"
 									>
-										View on{' '}
-										{chain.blockExplorers!.etherscan?.name || chain.blockExplorers!.default.name}
+										View on {chain.blockExplorers?.default.name}
 									</Link>
 								)}
 							</div>
