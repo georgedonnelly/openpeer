@@ -10,7 +10,7 @@ import logo from 'public/logo.svg';
 import logoSmall from 'public/smallLightLogo.svg';
 import React, { Fragment, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { useAccount } from 'hooks';
+import { useCombinedAccount } from 'hooks';
 
 import { Dialog, Menu, Transition } from '@headlessui/react';
 import {
@@ -156,7 +156,7 @@ const NavItems = ({ selected, onClick }: { selected: string | undefined; onClick
 };
 
 const Unauthenticated = () => {
-	const { address } = useAccount();
+	const { address } = useCombinedAccount();
 	const { authenticateUser, isAuthenticating } = useAuthenticateConnectedUser();
 	return (
 		<div className="flex h-screen">
@@ -179,7 +179,7 @@ const Layout = ({ Component, pageProps }: AppProps) => {
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [user, setUser] = useState<User | null>(null);
 	const { title, disableAuthentication } = pageProps;
-	const { address } = useAccount();
+	const { address } = useCombinedAccount();
 	const { isAuthenticated } = useDynamicContext();
 	const authenticated = disableAuthentication || isAuthenticated;
 

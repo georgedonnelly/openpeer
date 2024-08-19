@@ -1,4 +1,4 @@
-import { useTransactionFeedback, useAccount } from 'hooks';
+import { useTransactionFeedback, useCombinedAccount } from 'hooks';
 import { useDepositFunds } from 'hooks/transactions';
 import React, { useEffect, useState } from 'react';
 import { parseUnits } from 'viem';
@@ -9,7 +9,7 @@ import ModalWindow from 'components/Modal/ModalWindow';
 import { DepositFundsParams } from './DepositFundsButton.types';
 
 const DepositFundsButton = ({ token, tokenAmount, contract, disabled }: DepositFundsParams) => {
-	const { isConnected } = useAccount();
+	const { isConnected } = useCombinedAccount();
 	const amount = parseUnits(String(tokenAmount || 0), token.decimals);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [depositConfirmed, setDepositConfirmed] = useState(false);

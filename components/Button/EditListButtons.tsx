@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
-import { useConfirmationSignMessage, useAccount } from 'hooks';
+import { useConfirmationSignMessage, useCombinedAccount } from 'hooks';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
 import { List } from 'models/types';
 import snakecaseKeys from 'snakecase-keys';
@@ -11,7 +11,7 @@ import { Option } from 'components/Select/Select.types';
 const EditListButtons = ({ list }: { list: List }) => {
 	const { id, status } = list;
 	const router = useRouter();
-	const { address } = useAccount();
+	const { address } = useCombinedAccount();
 	const updateList = { ...list, status: status === 'created' ? 'active' : 'created' };
 	const toggleMessage = JSON.stringify(snakecaseKeys(updateList, { deep: true }), undefined, 4);
 	const [option, setOption] = useState<Option>();

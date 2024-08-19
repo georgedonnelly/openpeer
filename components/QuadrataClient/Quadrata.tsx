@@ -16,7 +16,7 @@ import {
 	QuadMintParamsBigNumbers
 } from '@quadrata/client-react';
 import QUAD_PASSPORT_ABI from '@quadrata/contracts/abis/QuadPassport.json';
-import { useConfirmationSignMessage, useAccount } from 'hooks';
+import { useConfirmationSignMessage, useCombinedAccount } from 'hooks';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
 
 const quadConfig: QuadClientConfig = {
@@ -37,7 +37,7 @@ const Quadrata = ({ onFinish, open, onHide }: { onFinish: () => void; open: bool
 	const chainId = config.state.current
 		? config.state.connections.get(config.state.current)?.chainId
 		: config.chains[0]?.id;
-	const { address: account, isConnecting } = useAccount();
+	const { address: account, isConnecting } = useCombinedAccount();
 	const { data: signMessageData, signMessage, variables } = useConfirmationSignMessage({});
 
 	const requiredAttributes = [QuadAttribute.DID, QuadAttribute.AML];

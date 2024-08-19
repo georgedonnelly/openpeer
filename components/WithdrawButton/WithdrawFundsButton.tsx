@@ -1,4 +1,4 @@
-import { useTransactionFeedback, useAccount } from 'hooks';
+import { useTransactionFeedback, useCombinedAccount } from 'hooks';
 import { useWithdrawFunds } from 'hooks/transactions';
 import React, { useEffect, useState } from 'react';
 import { parseUnits } from 'viem';
@@ -9,7 +9,7 @@ import ModalWindow from 'components/Modal/ModalWindow';
 import { WithdrawFundsButtonProps } from './WithdrawFundsButton.types';
 
 const WithdrawFundsButton = ({ token, tokenAmount, contract, disabled }: WithdrawFundsButtonProps) => {
-	const { isConnected, address } = useAccount();
+	const { isConnected, address } = useCombinedAccount();
 	const amount = parseUnits(String(tokenAmount || 0), token.decimals);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [withdrawConfirmed, setWithdrawConfirmed] = useState(false);

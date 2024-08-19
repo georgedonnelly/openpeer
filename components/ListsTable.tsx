@@ -9,7 +9,7 @@ import { smallWalletAddress } from 'utils';
 import { ClockIcon } from '@heroicons/react/24/outline';
 
 import { allChains } from 'models/networks';
-import { useAccount, useUserProfile } from 'hooks';
+import { useCombinedAccount, useUserProfile } from 'hooks';
 import { useContractReads } from 'wagmi';
 import { OpenPeerEscrow } from 'abis';
 import { Abi, formatUnits } from 'viem';
@@ -64,7 +64,7 @@ const BuyButton = ({ fiatAmount, tokenAmount, list }: BuyButtonProps) => {
 };
 
 const ListsTable = ({ lists, fiatAmount, tokenAmount, hideLowAmounts }: ListsTableProps) => {
-	const { address } = useAccount();
+	const { address } = useCombinedAccount();
 	const { primaryWallet } = useDynamicContext();
 	const chains = allChains;
 	const { user } = useUserProfile({});
