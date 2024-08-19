@@ -1,7 +1,7 @@
 import { OpenPeerEscrow } from 'abis';
 import { Contract } from 'ethers';
 import useBiconomy from 'hooks/useBiconomy';
-import useAccount from 'hooks/useAccount';
+import useCombinedAccount from 'hooks/useCombinedAccount';
 import { useState } from 'react';
 
 import { UseDepositFundsProps } from '../types';
@@ -15,7 +15,7 @@ const useGaslessDepositFunds = ({ contract, token, amount }: UseDepositFundsProp
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const { address } = useAccount();
+	const { address } = useCombinedAccount();
 
 	const { biconomy, gaslessEnabled } = useBiconomy({ contract });
 
