@@ -5,12 +5,12 @@ import { GetServerSideProps } from 'next';
 import ErrorPage from 'next/error';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { useAccount } from 'hooks';
+import { useCombinedAccount } from 'hooks';
 
 const Profile = ({ id }: { id: number }) => {
 	const [user, setUser] = useState<User | null>();
 	const [lists, setLists] = useState<List[]>([]);
-	const { address } = useAccount();
+	const { address } = useCombinedAccount();
 	const router = useRouter();
 	const { verification } = router.query;
 
