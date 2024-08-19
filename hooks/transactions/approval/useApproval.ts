@@ -1,5 +1,6 @@
+//hooks/transactions/approval/useApproval.ts
 import { Token } from 'models/types';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useConfig } from 'wagmi';
 
 import useGaslessApproval from './useGaslessApproval';
 import useTokenApproval from './useTokenApproval';
@@ -13,7 +14,11 @@ interface UseTokenApprovalProps {
 const useApproval = ({ token, spender, amount }: UseTokenApprovalProps) => {
 	const { gasless } = token;
 	const { address } = useAccount();
-	const { chain, chains } = useNetwork();
+	const config = useConfig();
+	const chainId = config.state.current
+		? config.state.connections.get(config.state.current)?.chainId
+		: undefined ?? config.chains[0]?.id;
+	const chain = config.chains.find((c) => c.id === chainId) || config.chains[0];
 
 	const withGasCall = useTokenApproval({
 		address: token.address,
@@ -23,7 +28,7 @@ const useApproval = ({ token, spender, amount }: UseTokenApprovalProps) => {
 
 	const { gaslessEnabled, isFetching, isLoading, isSuccess, data, approve } = useGaslessApproval({
 		amount,
-		chain: chain || chains[0],
+		chain,
 		spender,
 		tokenAddress: token.address,
 		userAddress: address!

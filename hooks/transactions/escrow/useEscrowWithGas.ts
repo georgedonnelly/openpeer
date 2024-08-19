@@ -1,6 +1,7 @@
+// hooks/transactions/escrow/useEscrowWithGas.ts
 import { OpenPeerEscrow } from 'abis';
 import { constants } from 'ethers';
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { useWriteContract, useSimulateContract, useWaitForTransactionReceipt } from 'wagmi';
 import { arbitrum } from 'wagmi/chains';
 
 import { UseEscrowFundsProps } from '../types';
@@ -18,7 +19,8 @@ const useEscrowWithGas = ({
 	const { address } = token;
 	const nativeToken = address === constants.AddressZero;
 	const partner = constants.AddressZero;
-	const { config } = usePrepareContractWrite({
+
+	const { data: simulateData } = useSimulateContract({
 		address: contract,
 		abi: OpenPeerEscrow,
 		functionName: nativeToken ? 'createNativeEscrow' : 'createERC20Escrow',
@@ -29,13 +31,19 @@ const useEscrowWithGas = ({
 		value: nativeToken && !instantEscrow ? amount + fee : undefined
 	});
 
-	const { data, write } = useContractWrite(config);
+	const { writeContract, data } = useWriteContract();
 
-	const { isLoading, isSuccess } = useWaitForTransaction({
-		hash: data?.hash
+	const { isLoading, isSuccess } = useWaitForTransactionReceipt({
+		hash: data
 	});
 
-	return { isLoading, isSuccess, escrowFunds: write, data, isFetching: false };
+	const escrowFunds = () => {
+		if (simulateData?.request) {
+			writeContract(simulateData.request);
+		}
+	};
+
+	return { isLoading, isSuccess, escrowFunds, data, isFetching: false };
 };
 
 export default useEscrowWithGas;

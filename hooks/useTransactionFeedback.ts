@@ -1,7 +1,7 @@
 import { useTransactionFeedbackModal } from 'contexts/TransactionFeedContext';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 interface Params {
 	isSuccess: boolean;
@@ -11,7 +11,7 @@ interface Params {
 }
 
 const useTransactionFeedback = ({ isSuccess, hash, Link, description }: Params) => {
-	const { chain } = useNetwork();
+	const { chain } = useAccount();
 
 	const { addRecentTransaction } = useTransactionFeedbackModal();
 

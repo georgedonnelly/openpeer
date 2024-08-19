@@ -1,8 +1,9 @@
+//components/Select/TokenSelect.tsx
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
 import Loading from 'components/Loading/Loading';
 import { Token } from 'models/types';
 import React, { useEffect, useState } from 'react';
-import { useNetwork } from 'wagmi';
+import { useConfig } from 'wagmi';
 import { polygon } from 'wagmi/chains';
 
 import Select from './Select';
@@ -21,8 +22,12 @@ const TokenSelect = ({
 }: TokenSelectProps) => {
 	const [tokens, setTokens] = useState<Token[]>();
 	const [isLoading, setLoading] = useState(false);
-	const { chain, chains } = useNetwork();
-	const chainId = allTokens ? undefined : networkId || chain?.id || chains[0]?.id || polygon.id;
+	const config = useConfig();
+	const currentChainId = config.state.current
+		? config.state.connections.get(config.state.current)?.chainId
+		: undefined;
+
+	const chainId = allTokens ? undefined : networkId || currentChainId || config.chains[0]?.id || polygon.id;
 
 	useEffect(() => {
 		if (!chainId && !allTokens) return;

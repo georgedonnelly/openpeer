@@ -1,15 +1,16 @@
+// components/Notifications/TransactionFeedback.tsx
 /* eslint-disable @typescript-eslint/indent */
 import Avatar from 'components/Avatar';
 import { User } from 'models/types';
 import React, { Fragment, useEffect } from 'react';
 import { smallWalletAddress } from 'utils';
 
-import { useAccount, useNetwork, useWaitForTransaction } from 'wagmi';
+import { useAccount, useConfig, useWaitForTransactionReceipt } from 'wagmi';
 
 import { Dialog, Transition } from '@headlessui/react';
 import { ArrowPathIcon, ArrowTopRightOnSquareIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { Manrope } from "next/font/google";
+import { Manrope } from 'next/font/google';
 import { blast } from 'models/networks';
 
 const manrope = Manrope({
@@ -27,8 +28,11 @@ export interface TransactionFeedbackProps {
 
 const TransactionFeedback = ({ open, onClose, hash, description, onTransactionReplaced }: TransactionFeedbackProps) => {
 	const { address } = useAccount();
-	const { chain } = useNetwork();
-	const { isError, isLoading, isSuccess } = useWaitForTransaction({
+	const config = useConfig();
+	const chainId = config.state.current ? config.state.connections.get(config.state.current)?.chainId : undefined;
+	const chain = config.chains.find((c) => c.id === chainId);
+
+	const { isError, isLoading, isSuccess } = useWaitForTransactionReceipt({
 		hash,
 		onReplaced: ({ transaction: { hash: newHash } }) => onTransactionReplaced(newHash)
 	});

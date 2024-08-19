@@ -1,11 +1,16 @@
-import { useNetwork } from 'wagmi';
+// hooks/transactions/release/useReleaseFunds.ts
+import { useConfig } from 'wagmi';
 import { FULL_GASLESS_CHAINS } from 'models/networks';
 import { UseEscrowTransactionProps } from '../types';
 import useGaslessReleaseFunds from './useGaslessReleaseFunds';
 import useGasReleaseFunds from './useGasReleaseFunds';
 
 const useReleaseFunds = ({ contract, orderID, buyer, token, amount }: UseEscrowTransactionProps) => {
-	const { chain } = useNetwork();
+	const config = useConfig();
+	const chainId = config.state.current
+		? config.state.connections.get(config.state.current)?.chainId
+		: undefined ?? config.chains[0]?.id;
+
 	const withGasCall = useGasReleaseFunds({ contract, orderID, buyer, token, amount });
 
 	const { gaslessEnabled, isFetching, isLoading, isSuccess, data, releaseFunds } = useGaslessReleaseFunds({
@@ -16,11 +21,11 @@ const useReleaseFunds = ({ contract, orderID, buyer, token, amount }: UseEscrowT
 		amount
 	});
 
-	if (isFetching || !chain) {
+	if (isFetching || !chainId) {
 		return { isLoading: false, isSuccess: false, isFetching };
 	}
 
-	if (gaslessEnabled && FULL_GASLESS_CHAINS.includes(chain.id)) {
+	if (gaslessEnabled && FULL_GASLESS_CHAINS.includes(chainId)) {
 		return { isLoading, isSuccess, data, releaseFunds, isFetching };
 	}
 

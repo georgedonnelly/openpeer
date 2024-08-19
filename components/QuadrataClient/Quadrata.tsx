@@ -1,9 +1,10 @@
+//components/QuadrataClient/Quadrata.tsx
 import '@quadrata/core-react/lib/cjs/quadrata-ui.min.css';
 
 import Loading from 'components/Loading/Loading';
 import { quadrataPassportContracts } from 'models/networks';
 import React, { useEffect, useState } from 'react';
-import { useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { useWriteContract, useConfig, useSimulateContract, useWaitForTransactionReceipt } from 'wagmi';
 
 import {
 	Page,
@@ -32,7 +33,10 @@ const Quadrata = ({ onFinish, open, onHide }: { onFinish: () => void; open: bool
 	const [accessToken, setAccessToken] = useState('');
 
 	// Hooks
-	const { chain: { id: chainId } = { id: 0 } } = useNetwork();
+	const config = useConfig();
+	const chainId = config.state.current
+		? config.state.connections.get(config.state.current)?.chainId
+		: config.chains[0]?.id;
 	const { address: account, isConnecting } = useAccount();
 	const { data: signMessageData, signMessage, variables } = useConfirmationSignMessage({});
 
@@ -60,32 +64,53 @@ const Quadrata = ({ onFinish, open, onHide }: { onFinish: () => void; open: bool
 	}, [signMessageData, variables?.message]);
 
 	// Claim Passport on-chain
-	const { config } = usePrepareContractWrite({
+	const { data: simulateData } = useSimulateContract({
 		abi: QUAD_PASSPORT_ABI,
+		address: chainId ? quadrataPassportContracts[chainId] : undefined,
+		functionName: 'setAttributesBulk',
 		args: mintParams ? [mintParams.params, mintParams.signaturesIssuers, mintParams.signatures] : undefined,
-		address: quadrataPassportContracts[chainId],
-		enabled: Boolean(mintParams),
-		// @ts-expect-error
-		value: mintParams?.fee || BigInt(0),
-		functionName: 'setAttributesBulk'
-	});
-
-	const { data, write } = useContractWrite(config);
-
-	useWaitForTransaction({
-		hash: data?.hash,
-		onSuccess: async () => {
-			await fetch(`/api/user_profiles/${chainId}`, {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${getAuthToken()}`
-				}
-			});
-			setMintComplete(true);
-			setMintParams(undefined);
-			onFinish();
+		value: mintParams?.fee ? BigInt(mintParams.fee.toString()) : undefined,
+		query: {
+			enabled: Boolean(mintParams && chainId)
 		}
 	});
+
+	const { writeContract, data: writeData } = useWriteContract();
+
+	const { isLoading: isWaiting, isSuccess } = useWaitForTransactionReceipt({
+		hash: writeData
+	});
+
+	// useWaitForTransaction({
+	// 	hash: data?.hash,
+	// 	onSuccess: async () => {
+	// 		await fetch(`/api/user_profiles/${chainId}`, {
+	// 			method: 'POST',
+	// 			headers: {
+	// 				Authorization: `Bearer ${getAuthToken()}`
+	// 			}
+	// 		});
+	// 		setMintComplete(true);
+	// 		setMintParams(undefined);
+	// 		onFinish();
+	// 	}
+	// });
+
+	useEffect(() => {
+		if (isSuccess && chainId) {
+			(async () => {
+				await fetch(`/api/user_profiles/${chainId}`, {
+					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${getAuthToken()}`
+					}
+				});
+				setMintComplete(true);
+				setMintParams(undefined);
+				onFinish();
+			})();
+		}
+	}, [isSuccess, chainId, onFinish]);
 
 	// Handlers
 	const handleSign = async (message: string) => {
@@ -111,8 +136,9 @@ const Quadrata = ({ onFinish, open, onHide }: { onFinish: () => void; open: bool
 	};
 
 	const handleMintClick = async () => {
-		// Prompting mint transaction
-		write?.();
+		if (simulateData?.request) {
+			writeContract(simulateData.request);
+		}
 	};
 
 	if (!account) {
@@ -134,14 +160,14 @@ const Quadrata = ({ onFinish, open, onHide }: { onFinish: () => void; open: bool
 			account={account}
 			config={quadConfig}
 			accessToken={accessToken}
-			chainId={chainId}
+			chainId={chainId as number}
 			onSign={handleSign}
 			signature={signature}
 			attributes={requiredAttributes}
 			onMintClick={handleMintClick}
 			mintComplete={mintComplete}
 			onPageChange={handlePageChange}
-			transactionHash={data?.hash}
+			transactionHash={writeData}
 			onMintParamsReady={handleMintParamsReady}
 			darkMode={false}
 			onHide={onHide}

@@ -1,6 +1,7 @@
+// hooks/transactions/escrow/useEscrowFunds.ts
 import { constants } from 'ethers';
 
-import { useNetwork } from 'wagmi';
+import { useConfig } from 'wagmi';
 import { FULL_GASLESS_CHAINS } from 'models/networks';
 import { UseEscrowFundsProps } from '../types';
 import useEscrowWithGas from './useEscrowWithGas';
@@ -17,7 +18,10 @@ const useEscrowFunds = ({
 	sellerWaitingTime
 }: UseEscrowFundsProps) => {
 	const nativeToken = token.address === constants.AddressZero;
-	const { chain } = useNetwork();
+	const config = useConfig();
+	const chainId = config.state.current
+		? config.state.connections.get(config.state.current)?.chainId
+		: undefined ?? config.chains[0]?.id;
 
 	const withGasCall = useEscrowWithGas({
 		orderID,
@@ -40,7 +44,7 @@ const useEscrowFunds = ({
 		sellerWaitingTime
 	});
 
-	if (isFetching || !chain) {
+	if (isFetching || !chainId) {
 		return { isLoading: false, isSuccess: false, isFetching };
 	}
 
@@ -48,7 +52,7 @@ const useEscrowFunds = ({
 	// polygon or mumbai deploy gasless non native tokens or instant escrows (no tokens transferred to escrow contract)
 	// other chains: deploy gasless if instant escrow (no tokens transferred to escrow contract)
 
-	if (gaslessEnabled && (FULL_GASLESS_CHAINS.includes(chain.id) ? !nativeToken || instantEscrow : instantEscrow)) {
+	if (gaslessEnabled && (FULL_GASLESS_CHAINS.includes(chainId) ? !nativeToken || instantEscrow : instantEscrow)) {
 		return { isLoading, isSuccess, data, escrowFunds };
 	}
 

@@ -1,3 +1,4 @@
+// components/EscrowDepositWithdraw.tsx
 /* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable @typescript-eslint/indent */
 import React, { useEffect, useState } from 'react';
@@ -6,7 +7,8 @@ import { Token } from 'models/types';
 import { allChains } from 'models/networks';
 import { useQRCode } from 'next-qrcode';
 import { OpenPeerEscrow } from 'abis';
-import { useContractRead, useNetwork, useSwitchNetwork } from 'wagmi';
+// update code
+import { useReadContract, useAccount, useSwitchChain, useConfig } from 'wagmi';
 import { formatUnits } from 'viem';
 import ClipboardText from './Buy/ClipboardText';
 import HeaderH3 from './SectionHeading/h3';
@@ -38,18 +40,21 @@ const EscrowDepositWithdraw = ({
 	canWithdraw
 }: EscrowDepositWithdrawProps) => {
 	const { SVG } = useQRCode();
-	const { switchNetwork } = useSwitchNetwork();
-	const { chain: connectedChain } = useNetwork();
-	const wrongChain = token.chain_id !== connectedChain?.id;
+	const { switchChain } = useSwitchChain();
+	const config = useConfig();
+	const chainId = config.state.current ? config.state.connections.get(config.state.current)?.chainId : undefined;
+	const wrongChain = token.chain_id !== chainId;
 
-	const { data } = useContractRead({
+	const { data } = useReadContract({
 		address: contract,
 		abi: OpenPeerEscrow,
 		functionName: 'balances',
 		args: [token.address],
-		enabled: !wrongChain,
-		chainId: token.chain_id,
-		watch: true
+		query: {
+			enabled: !wrongChain
+		},
+		chainId: token.chain_id
+		// watch: true
 	});
 
 	const [type, setType] = useState<'Deposit' | 'Withdraw'>(action);
@@ -97,7 +102,7 @@ const EscrowDepositWithdraw = ({
 						<>
 							{type} {token.name} {deposit ? 'into' : 'from'} your{' '}
 							<a
-								href={`${chain?.blockExplorers.etherscan.url}/address/${contract}`}
+								href={`${chain?.blockExplorers.default?.url}/address/${contract}`}
 								className="text-cyan-600"
 								target="_blank"
 								rel="noreferrer"
@@ -151,7 +156,14 @@ const EscrowDepositWithdraw = ({
 								containerExtraStyle="mt-0 mb-2"
 							/>
 							{wrongChain ? (
-								<Button title={`Switch to ${chain?.name}`} onClick={() => switchNetwork?.(chain?.id)} />
+								<Button
+									title={`Switch to ${chain?.name}`}
+									onClick={() => {
+										if (chain?.id) {
+											switchChain({ chainId: chain.id });
+										}
+									}}
+								/>
 							) : deposit ? (
 								<DepositFunds
 									contract={contract}
@@ -172,7 +184,7 @@ const EscrowDepositWithdraw = ({
 					</div>
 					{deposit && (
 						<div className="mt-8">
-							<h2 className="block text-xl font-medium mb-1 font-bold my-8">
+							<h2 className="block text-xl mb-1 font-bold my-8">
 								{`or send ${token.symbol} from your exchange`}
 							</h2>
 							<div className="mt-2 mb-4 border border-gray-200 rounded-lg py-8 px-4 md:px-8  flex flex-col xl:flex-row items-center">

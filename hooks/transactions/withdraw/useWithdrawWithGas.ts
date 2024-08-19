@@ -1,11 +1,12 @@
+// hooks/transactions/withdraw/useWithdrawWithGas.ts
 import { OpenPeerEscrow } from 'abis';
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { useWriteContract, useSimulateContract, useWaitForTransactionReceipt } from 'wagmi';
 
 import { HARDCODED_GAS_CHAINS } from 'models/networks';
 import { UseWithdrawFundsProps } from '../types';
 
 const useWithdrawWithGas = ({ amount, token, contract }: UseWithdrawFundsProps) => {
-	const { config } = usePrepareContractWrite({
+	const { data: simulateData } = useSimulateContract({
 		address: contract,
 		abi: OpenPeerEscrow,
 		functionName: 'withdrawBalance',
@@ -13,13 +14,25 @@ const useWithdrawWithGas = ({ amount, token, contract }: UseWithdrawFundsProps) 
 		gas: HARDCODED_GAS_CHAINS.includes(token.chain_id) ? BigInt('300000') : undefined
 	});
 
-	const { data, write } = useContractWrite(config);
+	const { writeContract, data: writeData } = useWriteContract();
 
-	const { isLoading, isSuccess } = useWaitForTransaction({
-		hash: data?.hash
+	const { isLoading, isSuccess } = useWaitForTransactionReceipt({
+		hash: writeData
 	});
 
-	return { isLoading, isSuccess, withdrawFunds: write, data, isFetching: false };
+	const withdrawFunds = () => {
+		if (simulateData?.request) {
+			writeContract(simulateData.request);
+		}
+	};
+
+	return {
+		isLoading,
+		isSuccess,
+		withdrawFunds,
+		data: writeData,
+		isFetching: false
+	};
 };
 
 export default useWithdrawWithGas;

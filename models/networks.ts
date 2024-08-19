@@ -1,3 +1,5 @@
+//models/networks.ts
+
 import { EvmNetwork } from '@dynamic-labs/sdk-react-core';
 import { defineChain } from 'viem';
 import { arbitrum, avalanche, bsc, gnosis, mainnet, optimism, polygon, polygonMumbai } from 'wagmi/chains';

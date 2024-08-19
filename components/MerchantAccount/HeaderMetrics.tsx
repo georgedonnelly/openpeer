@@ -1,3 +1,4 @@
+// components/MerchantAccount/HeaderMetrics.tsx
 import Avatar from 'components/Avatar';
 import QuadrataClient from 'components/QuadrataClient';
 import { providers } from 'ethers';
@@ -6,7 +7,8 @@ import { User } from 'models/types';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { smallWalletAddress } from 'utils';
-import { useNetwork, useSwitchNetwork } from 'wagmi';
+// import { useNetwork, useSwitchNetwork } from 'wagmi'; pending code update
+import { useAccount, useSwitchChain } from 'wagmi';
 
 import {
 	CalendarDaysIcon,

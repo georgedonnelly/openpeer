@@ -1,23 +1,30 @@
+// hooks/transactions/release/useGasReleaseFunds.ts
 import { OpenPeerEscrow } from 'abis';
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { useWriteContract, useSimulateContract, useWaitForTransactionReceipt } from 'wagmi';
 
 import { UseEscrowTransactionProps } from '../types';
 
 const useGasReleaseFunds = ({ contract, orderID, buyer, token, amount }: UseEscrowTransactionProps) => {
-	const { config } = usePrepareContractWrite({
+	const { data: simulateData } = useSimulateContract({
 		address: contract,
 		abi: OpenPeerEscrow,
 		functionName: 'release',
 		args: [orderID, buyer, token.address, amount]
 	});
 
-	const { data, write } = useContractWrite(config);
+	const { writeContract, data } = useWriteContract();
 
-	const { isLoading, isSuccess } = useWaitForTransaction({
-		hash: data?.hash
+	const { isLoading, isSuccess } = useWaitForTransactionReceipt({
+		hash: data
 	});
 
-	return { isLoading, isSuccess, releaseFunds: write, data, isFetching: false };
+	const releaseFunds = () => {
+		if (simulateData?.request) {
+			writeContract(simulateData.request);
+		}
+	};
+
+	return { isLoading, isSuccess, releaseFunds, data, isFetching: false };
 };
 
 export default useGasReleaseFunds;

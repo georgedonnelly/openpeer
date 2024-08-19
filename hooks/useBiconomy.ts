@@ -1,6 +1,7 @@
+// hooks/useBiconomy.ts
 import { networkApiKeys } from 'models/networks';
 import { useEffect, useState } from 'react';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useConfig } from 'wagmi';
 import { Biconomy } from '@biconomy/mexa';
 import { getAuthToken, useDynamicContext } from '@dynamic-labs/sdk-react-core';
 
@@ -11,8 +12,11 @@ interface UseBiconomyProps {
 const useBiconomy = ({ contract }: UseBiconomyProps) => {
 	const [biconomy, setBiconomy] = useState<Biconomy | null>();
 	const account = useAccount();
-	const { chain, chains } = useNetwork();
-	const chainId = (chain || chains[0])?.id;
+	// const { chain, chains } = useNetwork();
+	const config = useConfig();
+	const chainId = config.state.current
+		? config.state.connections.get(config.state.current)?.chainId
+		: undefined ?? config.chains[0]?.id;
 	const apiKey = networkApiKeys[chainId || 0];
 	const [gaslessEnabled, setGaslessEnabled] = useState<boolean>();
 	const { primaryWallet } = useDynamicContext();
@@ -56,7 +60,7 @@ const useBiconomy = ({ contract }: UseBiconomyProps) => {
 
 	useEffect(() => {
 		const initBiconomy = async () => {
-			if (address && chain && primaryWallet && contract) {
+			if (address && chainId && primaryWallet && contract) {
 				const provider = await primaryWallet.connector.getWalletClient();
 				if (!provider) return;
 
@@ -75,7 +79,7 @@ const useBiconomy = ({ contract }: UseBiconomyProps) => {
 			}
 		};
 		initBiconomy();
-	}, [address, chain, contract, apiKey, primaryWallet]);
+	}, [address, chainId, contract, apiKey, primaryWallet]);
 
 	useEffect(() => {
 		canSubmitGaslessTransaction();

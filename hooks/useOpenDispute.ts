@@ -1,25 +1,37 @@
+// hooks/useOpenDispute.ts
 import { OpenPeerEscrow } from 'abis';
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { useWriteContract, useSimulateContract, useWaitForTransactionReceipt } from 'wagmi';
 
 import { UseOpenDisputeProps } from './transactions/types';
 
 const useOpenDispute = ({ contract, orderID, buyer, token, amount, disputeFee }: UseOpenDisputeProps) => {
-	const { config } = usePrepareContractWrite({
+	const { data: simulateData } = useSimulateContract({
 		address: contract,
 		abi: OpenPeerEscrow,
 		functionName: 'openDispute',
 		args: [orderID, buyer, token.address, amount],
 		value: disputeFee,
-		enabled: disputeFee !== undefined
+		query: {
+			enabled: disputeFee !== undefined
+		}
 	});
 
-	const { data, write } = useContractWrite(config);
+	const { writeContract, data: writeData } = useWriteContract();
 
-	const { isLoading, isSuccess } = useWaitForTransaction({
-		hash: data?.hash
+	const { isLoading, isSuccess } = useWaitForTransactionReceipt({
+		hash: writeData ? writeData : undefined
 	});
 
-	return { isLoading, isSuccess, openDispute: write, data };
+	return {
+		isLoading,
+		isSuccess,
+		openDispute: () => {
+			if (simulateData?.request) {
+				writeContract(simulateData.request);
+			}
+		},
+		data: writeData
+	};
 };
 
 export default useOpenDispute;

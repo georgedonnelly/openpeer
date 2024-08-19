@@ -1,11 +1,11 @@
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
 import { Verification } from 'models/verification';
 import { useEffect, useState } from 'react';
-import { useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 const useVerificationStatus = (address: `0x${string}` | undefined) => {
 	const [verification, setVerification] = useState<Verification>();
-	const { chain } = useNetwork();
+	const { chain } = useAccount();
 
 	const fetchVerificationStatus = async () => {
 		const response = await fetch(`/api/verifications?alias=${address}`);

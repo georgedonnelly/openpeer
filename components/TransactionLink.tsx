@@ -1,9 +1,14 @@
+// components/TransactionLink.tsx
 import { blast } from 'models/networks';
 import React from 'react';
-import { useNetwork } from 'wagmi';
+import { useConfig } from 'wagmi';
 
 const TransactionLink = ({ hash }: { hash: `0x${string}` | undefined }) => {
-	const { chain } = useNetwork();
+	const config = useConfig();
+	const chainId = config.state.current
+		? config.state.connections.get(config.state.current)?.chainId
+		: undefined ?? config.chains[0]?.id;
+	const chain = config.chains.find((c) => c.id === chainId);
 
 	if (!chain || !hash) return <>Done</>;
 

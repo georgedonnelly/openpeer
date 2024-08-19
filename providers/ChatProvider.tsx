@@ -4,7 +4,8 @@ import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { MessageContext } from 'contexts/MessageContext';
 import React, { useContext } from 'react';
 // import { WalletChatProvider, WalletChatWidget } from 'react-wallet-chat-sso';
-import { useNetwork } from 'wagmi';
+//  need to switch to useAccount for wagmi but dupe id
+import { useConfig } from 'wagmi';
 import { useAccount } from 'hooks';
 
 interface ChatProviderProps {
