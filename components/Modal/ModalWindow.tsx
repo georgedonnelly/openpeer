@@ -3,7 +3,7 @@ import React, { Fragment } from 'react';
 
 import { Dialog, Transition } from '@headlessui/react';
 import { CheckIcon, ExclamationTriangleIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
-import { Manrope } from "next/font/google";
+import { Manrope } from 'next/font/google';
 
 export interface ModalProps {
 	title: string | JSX.Element;
@@ -101,7 +101,7 @@ const ModalWindow = ({
 										</div>
 									</div>
 								</div>
-								<div className="flex flex-col flex-col-reverse md:flex-row items-center justify-between sm:gap-3">
+								<div className="flex flex-col-reverse md:flex-row items-center justify-between sm:gap-3">
 									<span className="w-full">
 										<Button title="Cancel" outlined onClick={onClose} />
 									</span>

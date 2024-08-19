@@ -108,7 +108,7 @@ const HomePage = () => {
 						/>
 						<span className="text-gray-600 hover:cursor-pointer ml-2">Filters</span>
 					</div>
-					<div className="flex lg:justify-end hidden lg:block">
+					<div className="flex lg:justify-end lg:block">
 						<Filters
 							onFilterUpdate={setFilters}
 							needToReset={needToReset}
